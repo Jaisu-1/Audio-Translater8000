@@ -4,7 +4,7 @@ import re
 import sys
 import argparse
 
-from google.cloud import speech
+from google.cloud import speech, translate
 from google.cloud.speech import enums
 from google.cloud.speech import types
 import pyaudio
@@ -154,9 +154,15 @@ def main():
     10. hi-IN	
     11. en-US
     '''
-
+    translate_client = translate.Client()
     parser = argparse.ArgumentParser(description='Take in input and output language.')
+    parser.add_argument('-input_language', default='English')
+    parser.add_argument('-output_language', default = 'English')
+    args = parser.parse_args()
 
+    #Printing and changing the input language to match the input argument parameter.
+    print(languages_dict[args.input_language])
+    language_code = languages_dict[args.input_language]
 
     client = speech.SpeechClient()
     config = types.RecognitionConfig(
@@ -173,9 +179,12 @@ def main():
                     for content in audio_generator)
 
         responses = client.streaming_recognize(streaming_config, requests)
-
+        
         # Now, put the transcription responses to use.
         listen_print_loop(responses)
+
+    translated = translate_client.translate(text, target_language=args.output_language)
+    print(translated)
 
 
 if __name__ == '__main__':
