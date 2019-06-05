@@ -14,6 +14,7 @@ from six.moves import queue
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
 
+translate_client = translate.Client()
 
 class MicrophoneStream(object):
     """Opens a recording stream as a generator yielding the audio chunks."""
@@ -124,13 +125,20 @@ def listen_print_loop(responses):
             num_chars_printed = len(transcript)
 
         else:
-            print(transcript + overwrite_chars)
-
             # Exit recognition if any of the transcribed phrases could be
             # one of our keywords.
             if re.search(r'\b(exit|quit)\b', transcript, re.I):
                 print('Exiting..')
                 break
+
+
+            print(transcript + overwrite_chars)
+            to_translate = transcript + overwrite_chars
+            translation = translate_client.translate(to_translate, target_language='hi')
+            print("This is to be translated : " , to_translate)
+            print(u'Translation: {}'.format(translation['translatedText']))
+
+            
 
             num_chars_printed = 0
 
@@ -154,11 +162,12 @@ def main():
     10. hi-IN	
     11. en-US
     '''
-    translate_client = translate.Client()
     parser = argparse.ArgumentParser(description='Take in input and output language.')
     parser.add_argument('-input_language', default='English')
     parser.add_argument('-output_language', default = 'English')
     args = parser.parse_args()
+
+    text = []
 
     #Printing and changing the input language to match the input argument parameter.
     print(languages_dict[args.input_language])
@@ -180,11 +189,19 @@ def main():
 
         responses = client.streaming_recognize(streaming_config, requests)
         
+        # for response in responses:
+        #     result = response.results[0]
+        #     transcript = result.alternatives[0].transcript
+        #     text.append(transcript)
+
+        # print(text)
+
+
         # Now, put the transcription responses to use.
         listen_print_loop(responses)
 
-    translated = translate_client.translate(text, target_language=args.output_language)
-    print(translated)
+    # translated = translate_client.translate(text, target_language=args.output_language)
+    # print(translated)
 
 
 if __name__ == '__main__':
