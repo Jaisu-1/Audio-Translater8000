@@ -2,6 +2,7 @@ from __future__ import division
 
 import re
 import sys
+import argparse
 
 from google.cloud import speech
 from google.cloud.speech import enums
@@ -137,7 +138,8 @@ def listen_print_loop(responses):
 def main():
     # See http://g.co/cloud/speech/docs/languages
     # for a list of supported languages.
-    language_code = 'hi-IN'  # a BCP-47 language tag
+    language_code = 'en-US'
+    languages_dict = {'English' : 'en-IN', 'Hindi' : 'hi-IN', 'Telugu' : 'te-IN'}   # a dictionary BCP-47 language tag
     '''
     Codes for languages
     1. bn-IN	
@@ -152,6 +154,9 @@ def main():
     10. hi-IN	
     11. en-US
     '''
+
+    parser = argparse.ArgumentParser(description='Take in input and output language.')
+
 
     client = speech.SpeechClient()
     config = types.RecognitionConfig(
