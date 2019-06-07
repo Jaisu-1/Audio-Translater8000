@@ -134,7 +134,7 @@ def listen_print_loop(responses):
 
             print(transcript + overwrite_chars)
             to_translate = transcript + overwrite_chars
-            translation = translate_client.translate(to_translate, target_language='hi')
+            translation = translate_client.translate(to_translate, target_language='en')
             print("This is to be translated : " , to_translate)
             print(u'Translation: {}'.format(translation['translatedText']))
 
